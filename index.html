@@ -17,7 +17,7 @@
 :root{
   --bg:#EDF0F5; --panel:#FFFFFF; --ink:#141B2D; --muted:#5A6378; --line:#D5DAE4;
   --blue:#2F45C8; --blue-bg:#E3E7FB; --orange:#C2580E; --orange-bg:#FBEBDD;
-  --wait:#C62D3A; --wait-bg:#FBE3E5; --ok:#1C7A4E; --box:#F5F7FA;
+  --wait:#C62D3A; --wait-bg:#FBE3E5; --ok:#1C7A4E; --bad:#C62D3A; --bad-bg:#FBE3E5; --good:#1C7A4E; --box:#F5F7FA;
   --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
   --f-body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
@@ -25,11 +25,11 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0F1320; --panel:#181D2D; --ink:#E8EBF3; --muted:#9AA2B6; --line:#2B3246;
   --blue:#9BABFF; --blue-bg:#222B52; --orange:#F2A35E; --orange-bg:#3D2715;
-  --wait:#FF7F88; --wait-bg:#43191E; --ok:#5FD39A; --box:#12172A; color-scheme:dark}}
+  --wait:#FF7F88; --wait-bg:#43191E; --ok:#5FD39A; --bad:#FF7F88; --bad-bg:#43191E; --good:#5FD39A; --box:#12172A; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0F1320; --panel:#181D2D; --ink:#E8EBF3; --muted:#9AA2B6; --line:#2B3246;
   --blue:#9BABFF; --blue-bg:#222B52; --orange:#F2A35E; --orange-bg:#3D2715;
-  --wait:#FF7F88; --wait-bg:#43191E; --ok:#5FD39A; --box:#12172A; color-scheme:dark}
+  --wait:#FF7F88; --wait-bg:#43191E; --ok:#5FD39A; --bad:#FF7F88; --bad-bg:#43191E; --good:#5FD39A; --box:#12172A; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--f-body);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
@@ -94,6 +94,45 @@ details p b,.sci b{font-weight:500}
 .plain p{margin:8px 0 0;font-size:15px;max-width:62ch}
 .plain p b{font-weight:500}
 @media (prefers-reduced-motion:reduce){.key,.box{transition:none}}
+.hist .old{color:var(--muted)}
+details.sci-box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+details.sci-box>summary{cursor:pointer;font:700 17px var(--f-display)}
+details.sci-box p{font-size:15px;margin:10px 0 0;max-width:62ch}
+details.sci-box p b{font-weight:500}
+.ml-quitbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;min-height:40px}
+.ml-quit{position:relative;overflow:hidden;height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font:500 13px var(--f-body);cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.ml-quit i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--bad-bg,var(--line));z-index:0}
+.ml-quit span{position:relative;z-index:1}
+.ml-quit.holding{color:var(--bad,var(--ink));border-color:var(--bad,var(--ink))}
+.ml-quit-hint{font-size:12px;color:var(--muted)}
+.ml-status{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.ml-status h2{font:700 20px/1.2 var(--f-display);margin:0;text-wrap:balance}
+.ml-status p{margin:0;font-size:15px;max-width:62ch}
+.ml-status p b{font-weight:500}
+.ml-pill{display:inline-block;font:500 12px var(--f-body);padding:2px 10px;border-radius:999px;background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.ml-pill.ok{color:var(--good,var(--ink));border-color:currentColor}
+.ml-meter{height:6px;border-radius:3px;background:var(--bg);overflow:hidden}
+.ml-meter i{display:block;height:100%;background:var(--ink);border-radius:3px}
+.ml-trend{width:100%;height:auto;display:block}
+.ml-trend text{font:400 11px var(--f-body);fill:var(--muted)}
+.ml-link{background:none;border:0;padding:4px 0;color:var(--muted);font:400 13px var(--f-body);text-decoration:underline;cursor:pointer;align-self:flex-start}
+.ml-confirm{display:flex;flex-direction:column;gap:10px;font-size:14px}
+.ml-confirm-row{display:flex;gap:8px}
+.ml-btn{height:42px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ink);font:500 14px var(--f-body);cursor:pointer}
+.ml-btn.danger{background:var(--bad,#C62D3A);border-color:var(--bad,#C62D3A);color:var(--panel)}
+.ml-btn:focus-visible,.ml-link:focus-visible,.ml-quit:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.ml-src{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted)}
+.ml-src li{overflow-wrap:anywhere}
+.ml-src .n{font-family:var(--f-mono);color:var(--ink)}
+.ml-src a{color:inherit}
+sup.c{font-size:11px;line-height:0}
+sup.c a{color:var(--muted);text-decoration:none}
+.howto{background:transparent!important;border:0!important;padding:0!important}
+.howto summary{font:500 14px var(--f-body)!important;color:var(--muted)}
+.howto p{font-size:14px!important;margin:8px 0 0!important}
+.rule{margin:0;font-size:16px}
+.rule b{font-weight:500}
+
 </style>
 
 <div class="wrap">
@@ -101,11 +140,18 @@ details p b,.sci b{font-weight:500}
   <header>
     <h1>One Lane <span class="w">Brain</span></h1>
     <p class="tag">Two quick decisions, a split second apart. See how long the second one waits.</p>
-      <p class="dur">About 2 to 3 minutes</p>
+    <p class="dur">About 2 to 3 minutes</p>
   </header>
 
+  <p class="rule"><b>Left thumb: tap the color. Right thumb: tap the arrow. Left first.</b></p>
+  <details class="howto"><summary>How to play</summary>
+    <p>The left box turns blue or orange. Tap the matching color with your left thumb. The right box shows an arrow, up or down. Tap the matching arrow with your right thumb.</p>
+    <p>Part 1 shows the right box alone, to get your normal speed. In part 2 both boxes appear, the right one a moment after the left. Answer the left box first, then the right, each as fast as you can.</p>
+    <p>On a computer: A and S for the colors, K and L for the arrows. To stop partway, hold the Quit button for one second, or press Esc twice.</p>
+  </details>
+
   <section class="panel">
-    <p class="how" id="how"><b>Left box:</b> it turns blue or orange. Tap the matching color with your left thumb. <b>Right box:</b> an arrow points up or down. Tap the matching arrow with your right thumb. When both appear, answer the left box first, then the right, each as fast as you can.</p>
+    <div class="ml-quitbar" id="quitbar" hidden><span class="ml-quit-hint"></span><button class="ml-quit" id="quit" type="button"><i></i><span>Hold to quit</span></button></div>
     <div class="top">
       <div class="phase" id="phase">Part 1 of 2: right box alone</div>
       <div class="prog" id="prog">0/8</div>
@@ -125,11 +171,10 @@ details p b,.sci b{font-weight:500}
       </div>
     </div>
     <div class="fb" id="fb" aria-live="polite"></div>
-    <div class="row">
-      <button class="btn" id="go">Start part 1</button>
-      <button class="btn ghost" id="restart" style="width:auto;padding:0 18px">Start over</button>
-    </div>
+    <button class="btn" id="go">Start part 1</button>
   </section>
+
+  <section class="ml-status" id="mlstatus"></section>
 
   <section class="panel" id="results" hidden>
     <h2 id="verdict"></h2>
@@ -144,51 +189,124 @@ details p b,.sci b{font-weight:500}
       <div class="st"><small>Wait at the shortest gap</small><b id="wait"></b><span>Extra time on the right box vs. the longest gap</span></div>
       <div class="st"><small>Right box alone</small><b id="base"></b><span>Your normal speed for that decision</span></div>
       <div class="st"><small>Slope at short gaps</small><b id="slope"></b><span>Extra wait for each 100 ms sooner</span></div>
-      <div class="st"><small>Accuracy</small><b id="acc"></b><span>Trials with both answers right, in order</span></div>
+      <div class="st"><small>Toward your settled score</small><b id="sprog"></b><span id="sprogSub"></span></div>
     </div>
     <p class="note" id="slopeNote"></p>
     <div class="plain">
       <h3>What this means, in plain English</h3>
       <div id="plain"></div>
     </div>
-    <div class="row"><button class="btn" id="again">Play again</button></div>
+    <button class="btn" id="again">Play again</button>
     <div id="histWrap" hidden>
       <table class="hist"><thead><tr><th>Run</th><th>Alone</th><th>Wait</th><th>Accuracy</th></tr></thead><tbody id="hist"></tbody></table>
-      <p class="note" id="histAvg" style="margin-top:8px"></p>
     </div>
   </section>
 
-  <details>
-    <summary>Why the second answer waits</summary>
-    <p><b>Seeing is parallel. Deciding is not.</b> Your eyes take in both boxes at once. But choosing which button to press goes through one channel. While it is busy with the left box, the right box's decision sits in line.</p>
-    <p><b>What the chart shows.</b> When the right box appears long after the left, there is no line, and you answer at your normal speed. When it appears almost at once, you have to wait for the left decision to finish first. So the shorter the gap, the slower the right answer.</p>
-    <p><b>The slope is the fingerprint.</b> If decisions truly go one at a time, then every 100 ms sooner the right box appears adds about 100 ms of waiting. A slope near 100 ms per 100 ms means pure single-file processing. A smaller slope means some overlap.</p>
-    <p><b>Your left answer barely changes.</b> The left box is always first in line, so its speed stays about the same at every gap. Only the second decision pays.</p>
-    <p><b>What this can't tell you.</b> 30 trials is a small sample, and a phone's screen and touch timing add a few hundredths of a second of noise. Lab studies use hundreds of trials and special equipment. The history table smooths things out over several runs. The pattern is what matters more than any single number.</p>
+  <details class="sci-box">
+    <summary>The science behind this game</summary>
+    <h3 class="sci-h" style="border:0;padding-top:0">What it measures</h3>
+    <p>This game measures how long a second quick decision has to wait when it comes right after a first one. Researchers call this the psychological refractory period. Your score is the extra time your right-thumb answer takes when the right box appears 50 ms after the left box, compared with when it appears a full second later.</p>
+    <p><b>How this compares to the lab.</b> Lab studies use the same basic design: two choice tasks, a variable gap between them, and the slowdown of the second response at short gaps. Labs usually average many more trials per gap. This game uses 6 per gap and drops the fastest and slowest correct trial at each gap, so one slip doesn't dominate.</p>
 
-    <h3 class="sci-h">The science</h3>
-    <ul class="sci">
-      <li><b>First noticed nearly a century ago.</b> Telford found that a second quick response was slowed when it came right after a first one. He called the delay a refractory period, borrowing the term from nerve cells. <span>Telford, 1931</span></li>
-      <li><b>The single-channel idea.</b> Welford proposed that the brain has one decision channel that handles one choice at a time. The second choice must wait until the first is done. <span>Welford, 1952</span></li>
-      <li><b>Pinned down with this exact setup.</b> Pashler reviewed decades of two-task experiments like this game. Perception and pressing the button can overlap, but choosing the response cannot. The slope of minus one at short gaps became the signature. <span>Pashler, 1994</span></li>
-      <li><b>Found in the brain.</b> Brain scans during this kind of task showed one area, in the back of the side of the prefrontal cortex, that handled both decisions one after the other. It acted like the bottleneck itself. <span>Dux and colleagues, 2006</span></li>
-      <li><b>It happens even when you're told which to do first.</b> Knowing the order and having practice doesn't remove it. Heavy practice can shrink it, but careful studies usually find a small delay remains. <span>Ruthruff and colleagues, 2003</span></li>
-      <li><b>It shows up on the road.</b> In a driving simulator, drivers who had to make a quick choice just before the car ahead braked hit their own brakes later. The shorter the gap, the bigger the delay. Same curve as this game. <span>Levy, Pashler and Boer, 2006</span></li>
-    </ul>
-    <p><b>What's still debated.</b> Some researchers think it's not a strict one-at-a-time gate but a shared pool of capacity, where the first task simply grabs most of it. Both views predict the same basic curve. They differ on whether any overlap is possible. Evidence exists for both, and the answer may depend on the task.</p>
+    <h3 class="sci-h">What the research says</h3>
+    <p><b>Choosing is the bottleneck.</b> A major review of two-task studies concluded there is a stubborn bottleneck in the process of choosing actions <sup class="c"><a href="#src1">[1]</a></sup>. Seeing both boxes can happen at once. Picking the response can't.</p>
+    <p><b>The one-lane prediction.</b> If choices truly go one at a time, then for every 100 ms sooner the second box appears, the second answer should wait about 100 ms longer, until the gap is long enough that the first choice is already done. That's the slope this game reports. This is our plain-English version of what the bottleneck model implies.</p>
+    <p><b>Practice shrinks it, but it stays.</b> In one study, the wait started at 353 ms and shrank to about 40 ms over many practice sessions <sup class="c"><a href="#src3">[3]</a></sup>. A follow-up found the bottleneck still existed even after extensive practice. The wait mostly shrank because people got faster at the first task <sup class="c"><a href="#src2">[2]</a></sup>.</p>
+    <p><b>It shows up behind the wheel.</b> In a driving simulator, people's braking got slower the closer a quick choice task came before the moment they needed to brake <sup class="c"><a href="#src4">[4]</a></sup>.</p>
+
+    <h3 class="sci-h">Adult norms</h3>
+    <p>No published adult norm exists for this game. The size of the wait depends heavily on which two tasks are used. For reference only: the study above measured 353 ms before practice, using a tone task answered by voice plus a visual task answered by hand <sup class="c"><a href="#src3">[3]</a></sup>. That's a different task pair, so it isn't a fair comparison for this game.</p>
+
+    <h3 class="sci-h">What's still debated</h3>
+    <p>Some researchers argue the evidence doesn't require a strict one-at-a-time gate. They say most findings can also be explained if the two tasks share a limited pool of mental capacity <sup class="c"><a href="#src5">[5]</a></sup>. Both views predict that the second answer slows down at short gaps. They disagree on whether any real overlap happens.</p>
+
+    <h3 class="sci-h">Limits of this game</h3>
+    <p><b>One round is noisy.</b> In our simulation of 3,000 rounds by players with a built-in bottleneck, one round's wait landed within about ±140 ms of the true value 95% of the time. Pooling 10 rounds narrows that to about ±60 ms. The scoring showed no lean high or low.</p>
+    <p><b>Phones add noise.</b> Screen refresh and touch timing add a few hundredths of a second of jitter to every tap.</p>
+    <p><b>Practice changes the score.</b> As the research above shows, the wait shrinks with practice. So your score reflects how practiced you are at this game, not a fixed trait.</p>
+    <p><b>The simulation is a model.</b> Its speeds and noise levels are our assumptions. Your own consistency, shown once you settle, is the better guide for you.</p>
+    <h3 class="sci-h">Sources</h3>
+    <ol class="ml-src" id="sources"></ol>
   </details>
 
-  <p class="foot">Based on the psychological refractory period: Telford 1931, Welford 1952, Pashler 1994.</p>
+  <p class="foot">Scores are saved on this device only. Nothing is sent anywhere.</p>
 </div>
 
 <script>
+var ML=(function(){
+  function load(k){try{var a=JSON.parse(localStorage.getItem(k)||"[]");return Array.isArray(a)?a:[]}catch(e){return []}}
+  function get(k){try{var v=localStorage.getItem(k);return v==null?null:JSON.parse(v)}catch(e){return null}}
+  function put(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+  function del(k){try{localStorage.removeItem(k)}catch(e){}}
+  function mean(a){if(!a.length)return null;var s=0;a.forEach(function(x){s+=x});return s/a.length}
+  function sd(a){if(a.length<2)return null;var m=mean(a),s=0;a.forEach(function(x){s+=(x-m)*(x-m)});return Math.sqrt(s/(a.length-1))}
+  /* runs are stored newest first. settle() returns a chronological view of the valid rounds. */
+  function settle(runs,N,val,ok){
+    var v=runs.slice().reverse().filter(function(r){return (!ok||ok(r))&&typeof val(r)==="number"&&isFinite(val(r))}).map(val);
+    var n=v.length,o={n:n,N:N,vals:v,need:Math.max(0,N-n),avg:mean(v),latest:n?v[n-1]:null};
+    if(n>=N){var last=v.slice(-N);o.settled=mean(last);o.spread=sd(last);
+      if(n>=2*N){o.firstN=mean(v.slice(0,N));o.latestN=mean(last)}}
+    return o}
+  function plural(n,w){return n+" "+w+(n===1?"":"s")}
+  /* Hold to quit: about 1 second press with a fill bar. Esc twice on a computer. */
+  function holdToQuit(btn,onQuit){
+    var t=null,fill=btn.querySelector("i"),escAt=0,hint=btn.parentNode.querySelector(".ml-quit-hint");
+    function cancel(){if(t){clearTimeout(t);t=null}btn.classList.remove("holding");if(fill)fill.style.transition="none",fill.style.width="0"}
+    function start(e){e.preventDefault();cancel();btn.classList.add("holding");
+      if(fill){void fill.offsetWidth;fill.style.transition="width 1s linear";fill.style.width="100%"}
+      t=setTimeout(function(){t=null;cancel();onQuit()},1000)}
+    btn.addEventListener("pointerdown",start);
+    ["pointerup","pointerleave","pointercancel"].forEach(function(ev){btn.addEventListener(ev,cancel)});
+    btn.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" ")e.preventDefault()});
+    document.addEventListener("keydown",function(e){
+      if(e.key!=="Escape"||btn.closest("[hidden]")||btn.hidden)return;
+      var now=Date.now();
+      if(now-escAt<1500){escAt=0;if(hint)hint.textContent="";onQuit()}
+      else{escAt=now;if(hint){hint.textContent="Press Esc again to quit";setTimeout(function(){if(Date.now()-escAt>=1400)hint.textContent=""},1500)}}})}
+  /* Reset link with an on-page Cancel / Erase confirmation. Only removes the keys given. */
+  function resetLink(wrap,keys,label,onDone){
+    function idle(){wrap.innerHTML='<button class="ml-link" type="button">'+label+'</button>';
+      wrap.firstChild.addEventListener("click",ask)}
+    function ask(){wrap.innerHTML='<div class="ml-confirm"><span>Erase all saved scores for this game on this device? This can\'t be undone.</span><div class="ml-confirm-row"><button class="ml-btn ghost" type="button">Cancel</button><button class="ml-btn danger" type="button">Erase</button></div></div>';
+      var b=wrap.querySelectorAll("button");b[0].addEventListener("click",idle);
+      b[1].addEventListener("click",function(){keys.forEach(del);idle();if(onDone)onDone()})}
+    idle()}
+  function saveSummary(id,o){o.d=Date.now();put("mindlab.summary."+id,o)}
+  function sources(el,list){el.innerHTML=list.map(function(s,i){
+    return '<li id="src'+(i+1)+'"><span class="n">['+(i+1)+']</span> '+s.c+(s.doi?' <a href="https://doi.org/'+s.doi+'" target="_blank" rel="noopener">https://doi.org/'+s.doi+'</a>':'')+'</li>'}).join("")}
+  /* Small trend chart of round scores with the settled band. */
+  function trend(svg,vals,N,fmt,color){
+    var W=480,H=150,L=44,R=12,T=12,B=26;if(!vals.length){svg.innerHTML="";return}
+    var lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals);var pad=(hi-lo)*0.15||Math.abs(hi)*0.1||1;lo-=pad;hi+=pad;
+    function X(i){return vals.length===1?(L+W-R)/2:L+i/(vals.length-1)*(W-L-R)}
+    function Y(v){return T+(hi-v)/(hi-lo)*(H-T-B)}
+    var g="",ticks=[lo,(lo+hi)/2,hi];
+    ticks.forEach(function(v){g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+fmt(v)+'</text>'});
+    if(vals.length>=N){var x0=X(vals.length-N),x1=X(vals.length-1);g+='<rect x="'+(x0-6)+'" y="'+T+'" width="'+(x1-x0+12)+'" height="'+(H-T-B)+'" fill="var(--line)" opacity=".45" rx="6"/>';
+      var m=mean(vals.slice(-N));g+='<line x1="'+(x0-6)+'" x2="'+(x1+6)+'" y1="'+Y(m)+'" y2="'+Y(m)+'" stroke="'+color+'" stroke-width="2" stroke-dasharray="5 4"/>'}
+    g+='<polyline points="'+vals.map(function(v,i){return X(i)+","+Y(v)}).join(" ")+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linejoin="round"/>';
+    vals.forEach(function(v,i){g+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="3.5" fill="'+color+'"/>'});
+    g+='<text x="'+L+'" y="'+(H-6)+'">first round</text><text x="'+(W-R)+'" y="'+(H-6)+'" text-anchor="end">latest</text>';
+    svg.innerHTML=g}
+  return {load:load,get:get,put:put,del:del,mean:mean,sd:sd,settle:settle,plural:plural,holdToQuit:holdToQuit,resetLink:resetLink,saveSummary:saveSummary,sources:sources,trend:trend}
+})();
+
 (function(){
   var SOAS=[50,150,300,600,1000],PER=6,BASE_N=8,TIMEOUT=2500;
+  var KEY="onelane.runs",SUMKEY="mindlab.summary.olb",N=10,LUCK=140,MARGIN=60,ROUND_SD=71,KEEP=200;
+  var SOURCES=[
+    {c:"Pashler, H. (1994). Dual-task interference in simple tasks: Data and theory. <i>Psychological Bulletin, 116</i>(2), 220&ndash;244.",doi:"10.1037/0033-2909.116.2.220"},
+    {c:"Ruthruff, E., Johnston, J. C., &amp; Van Selst, M. (2001). Why practice reduces dual-task interference. <i>Journal of Experimental Psychology: Human Perception and Performance, 27</i>(1), 3&ndash;21.",doi:"10.1037/0096-1523.27.1.3"},
+    {c:"Van Selst, M., Ruthruff, E., &amp; Johnston, J. C. (1999). Can practice eliminate the psychological refractory period effect? <i>Journal of Experimental Psychology: Human Perception and Performance, 25</i>(5), 1268&ndash;1283.",doi:"10.1037/0096-1523.25.5.1268"},
+    {c:"Levy, J., Pashler, H., &amp; Boer, E. (2006). Central interference in driving: Is there any stopping the psychological refractory period? <i>Psychological Science, 17</i>(3), 228&ndash;235.",doi:"10.1111/j.1467-9280.2006.01690.x"},
+    {c:"Navon, D., &amp; Miller, J. (2002). Queuing or sharing? A critical evaluation of the single-bottleneck notion. <i>Cognitive Psychology, 44</i>(3), 193&ndash;251.",doi:"10.1006/cogp.2001.0767"}
+  ];
   var S,timer=null,raf=null;
   function $(id){return document.getElementById(id)}
+  function val(r){return r.w}
   function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
   function fresh(){var dual=[];SOAS.forEach(function(s){for(var i=0;i<PER;i++)dual.push(s)});
-    return {part:0,trials:[],queue:[],base:[],dual:[],cur:null,running:false,data:shuffle(dual)}}
+    return {part:0,base:[],dual:[],cur:null,running:false,active:false,data:shuffle(dual)}}
 
   function setBox(id,cls,html){var b=$(id);b.className="box"+(cls?" "+cls:"");b.innerHTML=html}
   function fixation(dim1){setBox("b1",dim1?"off":"",'<span class="fix">+</span>');setBox("b2","",'<span class="fix">+</span>')}
@@ -196,40 +314,31 @@ details p b,.sci b{font-weight:500}
     var p=S.part,n=p===0?S.base.length:S.dual.length,tot=p===0?BASE_N:S.data.length;
     $("phase").textContent=p===0?"Part 1 of 2: right box alone":(p===1?"Part 2 of 2: both boxes":"Done");
     $("prog").textContent=p<2?n+"/"+tot:"";
-    $("go").textContent=S.running?"Running":(p===0?"Start part 1":(p===1?"Start part 2":"Done"));
-    $("go").disabled=S.running||p>1;
-  }
+    $("go").textContent=S.running?"Running":(p===0?"Start part 1":(p===1?"Start part 2":"Play again"));
+    $("go").disabled=S.running;$("quitbar").hidden=!S.active}
 
   function nextTrial(){
     var p=S.part,done=p===0?S.base.length>=BASE_N:S.dual.length>=S.data.length;
     if(done){S.running=false;fixation(false);
       if(p===0){S.part=1;$("fb").style.color="var(--muted)";$("fb").textContent="Part 1 done. Next, both boxes. Answer left first.";ui();return}
-      S.part=2;ui();results();return}
+      S.part=2;S.active=false;ui();results();return}
     fixation(p===0);
-    var iti=700+Math.random()*600;
     timer=setTimeout(function(){
       var soa=p===0?null:S.data[S.dual.length];
       var t={soa:soa,c1:Math.random()<.5?"blue":"orange",c2:Math.random()<.5?"up":"down",on1:null,on2:null,r1:null,r2:null,a1:null,a2:null};
-      S.cur=t;
-      var start=null;
+      S.cur=t;var start=null;
       function frame(now){
-        if(start===null){start=now;
-          if(p===1){setBox("b1",t.c1,"");t.on1=performance.now()}}
+        if(start===null){start=now;if(p===1){setBox("b1",t.c1,"");t.on1=performance.now()}}
         var el=now-start;
-        if(t.on2===null&&(p===0||el>=soa)){setBox("b2","",t.c2==="up"?"&#9650;":"&#9660;");t.on2=performance.now();
-          timer=setTimeout(endTrial,TIMEOUT);return}
+        if(t.on2===null&&(p===0||el>=soa)){setBox("b2","",t.c2==="up"?"&#9650;":"&#9660;");t.on2=performance.now();timer=setTimeout(endTrial,TIMEOUT);return}
         raf=requestAnimationFrame(frame)}
-      raf=requestAnimationFrame(frame);
-    },iti);
-  }
+      raf=requestAnimationFrame(frame)},700+Math.random()*600)}
 
   function respond(task,ans){
-    var t=S.cur;if(!S.running||!t)return;
-    var now=performance.now();
+    var t=S.cur;if(!S.running||!t)return;var now=performance.now();
     if(task===1){if(S.part===0||t.r1!==null||t.on1===null)return;t.r1=now-t.on1;t.a1=ans}
     else{if(t.r2!==null||t.on2===null)return;t.r2=now-t.on2;t.a2=ans}
-    if(S.part===0?t.r2!==null:(t.r1!==null&&t.r2!==null)){clearTimeout(timer);endTrial()}
-  }
+    if(S.part===0?t.r2!==null:(t.r1!==null&&t.r2!==null)){clearTimeout(timer);endTrial()}}
 
   function endTrial(){
     var t=S.cur;if(!t)return;S.cur=null;cancelAnimationFrame(raf);
@@ -240,87 +349,104 @@ details p b,.sci b{font-weight:500}
       if(t.r1===null||t.r2===null)msg="Too slow";else if(!order)msg="Answer the left box first";else if(!ok1)msg="Wrong color";else if(!ok2)msg="Wrong arrow";
       S.dual.push(t)}
     $("fb").style.color="var(--wait)";$("fb").textContent=msg;ui();
-    timer=setTimeout(function(){$("fb").textContent="";nextTrial()},msg?500:150);
-  }
+    timer=setTimeout(function(){$("fb").textContent="";nextTrial()},msg?500:150)}
 
-  function median(a){if(!a.length)return null;var b=a.slice().sort(function(x,y){return x-y}),m=b.length>>1;return b.length%2?b[m]:(b[m-1]+b[m])/2}
+  function quit(){clearTimeout(timer);cancelAnimationFrame(raf);S=fresh();fixation(true);$("fb").style.color="var(--muted)";$("fb").textContent="Stopped. Nothing was saved.";ui()}
+  ML.holdToQuit($("quit"),quit);
+
+  /* Trimmed mean: drop the fastest and slowest correct trial when there are 5 or more. Labs use mean RT of correct trials,
+     usually with outliers removed; this is a simple, fixed version of that. */
+  function tmean(a){if(!a.length)return null;if(a.length<5)return ML.mean(a);var b=a.slice().sort(function(x,y){return x-y});return ML.mean(b.slice(1,-1))}
   function ms(x){return x==null?"--":Math.round(x)+" ms"}
 
   function results(){
-    var base=median(S.base.filter(function(t){return t.ok}).map(function(t){return t.r2}));
+    var base=tmean(S.base.filter(function(t){return t.ok}).map(function(t){return t.r2}));
     var by=SOAS.map(function(s){var g=S.dual.filter(function(t){return t.soa===s&&t.ok});
-      return {soa:s,rt2:median(g.map(function(t){return t.r2})),rt1:median(g.map(function(t){return t.r1})),n:g.length}});
+      return {soa:s,rt2:tmean(g.map(function(t){return t.r2})),rt1:tmean(g.map(function(t){return t.r1})),n:g.length}});
     var okN=S.dual.filter(function(t){return t.ok}).length,acc=Math.round(okN/S.dual.length*100);
-    var short=by[0].rt2,long=by[4].rt2,wait=(short!=null&&long!=null)?short-long:null;
+    var wait=(by[0].rt2!=null&&by[4].rt2!=null)?by[0].rt2-by[4].rt2:null;
     var slope=(by[0].rt2!=null&&by[2].rt2!=null)?(by[0].rt2-by[2].rt2)/((SOAS[2]-SOAS[0])/100):null;
+    var runs=ML.load(KEY);runs.unshift({d:Date.now(),v:2,b:base==null?null:Math.round(base),w:wait==null?null:Math.round(wait),a:acc,sl:slope==null?null:Math.round(slope)});runs=runs.slice(0,KEEP);ML.put(KEY,runs);
+    var st=ML.settle(runs,N,val);
     $("wait").textContent=wait==null?"--":(wait>=0?"+":"−")+Math.abs(Math.round(wait))+" ms";
-    $("base").textContent=ms(base);
-    $("slope").textContent=slope==null?"--":Math.round(slope)+" ms";
-    $("acc").textContent=acc+"%";
-    if(wait==null){$("verdict").textContent="Not enough correct trials to measure the wait.";$("meaning").textContent="Try again, and answer the left box first on every trial."}
-    else if(wait>60){$("verdict").textContent="Your second decision waited "+Math.round(wait)+" ms in line.";
-      $("meaning").textContent="When the right box came 50 ms after the left, you answered it "+Math.round(wait)+" ms slower than when it came a full second later. That delay is the bottleneck: the right decision couldn't start until the left one finished."}
-    else{$("verdict").textContent="Only a small wait this run: "+Math.round(wait)+" ms.";
-      $("meaning").textContent="Most people show 150 to 400 ms here. A small gap can mean you answered the left box very fast, or that this short run was noisy. Try a few more runs."}
-    $("slopeNote").textContent=slope==null?"":(slope>=70?"Your slope was about "+Math.round(slope)+" ms per 100 ms. Close to 100 means your two decisions went almost strictly one at a time.":
-      (slope>=30?"Your slope was about "+Math.round(slope)+" ms per 100 ms. Partly one at a time, with some overlap or noise.":"Your slope was about "+Math.round(slope)+" ms per 100 ms. Little single-file pattern this run, which can happen with only 6 trials per gap."));
+    $("base").textContent=ms(base);$("slope").textContent=slope==null?"--":Math.round(slope)+" ms";
+    $("sprog").textContent=st.settled!=null?"Settled":Math.min(st.n,N)+" of "+N;
+    $("sprogSub").textContent=st.settled!=null?"Settled wait: "+Math.round(st.settled)+" ms":ML.plural(st.need,"more round")+" to go";
+    if(wait==null){$("verdict").textContent="Not enough correct trials to measure the wait.";$("meaning").textContent="Try again, and answer the left box first on every trial. This round wasn't counted toward your settled score."}
+    else if(wait>60){$("verdict").textContent="Your second decision waited "+Math.round(wait)+" ms in line.";$("meaning").textContent="When the right box came 50 ms after the left, you answered it "+Math.round(wait)+" ms slower than when it came a full second later."}
+    else{$("verdict").textContent="Only a small wait this round: "+Math.round(wait)+" ms.";$("meaning").textContent="One round is noisy. Your settled score, after "+N+" rounds, is the one to trust."}
+    $("slopeNote").textContent=slope==null?"":(slope>=70?"Your slope was about "+Math.round(slope)+" ms per 100 ms. Close to 100 means your two decisions went almost strictly one at a time.":(slope>=30?"Your slope was about "+Math.round(slope)+" ms per 100 ms. Partly one at a time, with some overlap or noise.":"Your slope was about "+Math.round(slope)+" ms per 100 ms. Little single-file pattern this round, which can happen with only 6 trials per gap."));
     chart(by,base);
     $("plain").innerHTML=plain(by,base,wait,slope,acc);
-    $("results").hidden=false;
-    save({d:Date.now(),b:base==null?null:Math.round(base),w:wait==null?null:Math.round(wait),a:acc});
-    $("results").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
-  }
+    $("results").hidden=false;hist(runs);status();
+    $("results").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"})}
 
-  function sec(x){var s=x/1000;return "about "+(s<0.95?s.toFixed(2):s.toFixed(1))+" seconds"}
   function plain(by,base,wait,slope,acc){
     var out=[];
     out.push("<b>First, the units.</b> Times here are in milliseconds, written ms. A millisecond is a thousandth of a second, so 250 ms is a quarter of a second.");
-    if(wait==null){out.push("<b>The short version.</b> Too few trials were answered correctly and in order to measure your wait. Play again, and always answer the left box first.");}
-    else if(wait>60)out.push("<b>The short version.</b> When the right box showed up right after the left one, you took "+Math.round(wait)+" ms longer to answer it ("+sec(wait)+") than when it came a full second later. Your eyes saw both boxes at once. But your brain made the two choices one at a time, so the second choice waited in line.");
-    else out.push("<b>The short version.</b> Your second answer barely waited this run, only "+Math.round(wait)+" ms. Most people wait much longer. A short run can be noisy, so try a few more before reading much into it.");
-    var r50=by[0].rt2,r1000=by[4].rt2,rt1s=by.map(function(b){return b.rt1}).filter(function(x){return x!=null});
-    var flat=rt1s.length>1&&(Math.max.apply(null,rt1s)-Math.min.apply(null,rt1s))<120;
-    var shape=(r50!=null&&r1000!=null&&r50-r1000>60)?"Yours does exactly that: it starts high at the shortest gap and drops toward the gray line as the gap grows.":"Yours didn't drop much this run, which is why your wait came out small.";
-    out.push("<b>Reading the chart.</b> Left to right is the gap between the two boxes, from 50 ms to a full second. The red line is how fast you answered the right box at each gap. The gray dashed line is how fast you answered it when it appeared alone. If your brain could make both choices at the same moment, the red line would sit flat on the gray line. Instead, when the gap is short, the right answer has to wait, so the red line should start high and come down. "+shape+" The blue line is the left box. "+(flat?"It stays about flat because the left box was always first in line, so it never had to wait.":"It moved around a bit this run, but the left box never has to wait, so on average it should stay flat."));
-    if(slope!=null){var sl=Math.round(slope);
-      out.push("<b>The slope, "+sl+" ms.</b> Picture a single checkout lane. If you step in line 100 ms after the person ahead, and they still need 100 ms to finish, you wait the full 100 ms. So if decisions go strictly one at a time, every 100 ms sooner the right box appears adds about 100 ms of waiting. "+(sl>=70?"Yours was "+sl+", close to that. Your two choices went almost strictly single file.":(sl>=30?"Yours was "+sl+", so mostly single file, with some overlap or noise.":"Yours was "+sl+", so little single-file pattern this run. With only 6 trials at each gap, one run can miss it.")));}
-    if(base!=null&&r50!=null)out.push("<b>Alone vs squeezed.</b> On its own, you answered the right box in "+Math.round(base)+" ms. Squeezed right behind the left box, it took "+Math.round(r50)+" ms. Same box, same choice. "+(r50>base*1.15?"The only difference was what was in line ahead of it.":"This run, being squeezed didn't slow it much."));
-    if(acc<80)out.push("<b>About your accuracy, "+acc+"%.</b> Trials with a wrong key, a missed answer, or the right box answered first were left out. With fewer trials left, your numbers are less reliable this run.");
-    if(wait!=null&&wait>60){var ft=Math.round(wait/1000*88);out.push("<b>Why it matters.</b> This is the same delay that shows up in driving. At 60 miles per hour, a car covers 88 feet every second. A "+Math.round(wait)+" ms delay before you hit the brakes means about "+ft+" more feet of travel. It's also why hands-free phones don't fix distracted driving. The problem isn't your hands. It's the single lane your decisions travel through.");}
-    else out.push("<b>Why it matters.</b> This delay shows up in driving. At 60 miles per hour, a car covers 88 feet every second, so even a quarter-second wait before braking adds about 22 feet. It's also why hands-free phones don't fix distracted driving. The problem isn't your hands. It's the single lane your decisions travel through.");
-    return out.map(function(x){return "<p>"+x+"</p>"}).join("");
-  }
+    if(wait==null)out.push("<b>The short version.</b> Too few trials were answered correctly and in order to measure your wait. Play again, and always answer the left box first.");
+    else if(wait>60)out.push("<b>The short version.</b> When the right box showed up right after the left one, you took "+Math.round(wait)+" ms longer to answer it than when it came a full second later. Your eyes saw both boxes at once, but your brain made the two choices one at a time. So the second choice waited in line.");
+    else out.push("<b>The short version.</b> Your second answer barely waited this round, only "+Math.round(wait)+" ms. Most rounds show a clear wait. A single round is noisy, so look at your settled score.");
+    var r50=by[0].rt2,r1000=by[4].rt2;
+    out.push("<b>Reading the chart.</b> Left to right is the gap between the two boxes, from 50 ms to a full second. The red line is how fast you answered the right box at each gap. The gray dashed line is your speed on the right box when it appeared alone. If you could make both choices at once, the red line would sit flat near the gray line. Instead, a short gap makes the right answer wait, so the red line should start high and come down. "+((r50!=null&&r1000!=null&&r50-r1000>60)?"Yours does that.":"Yours didn't drop much this round.")+" The blue line is the left box, which is always first in line, so it should stay about flat.");
+    if(slope!=null)out.push("<b>The slope, "+Math.round(slope)+" ms.</b> Picture a single checkout lane. If you get in line 100 ms after the person ahead, and they still need 100 ms to finish, you wait the full 100 ms. So if decisions go strictly one at a time, each 100 ms sooner the right box appears adds about 100 ms of waiting. That's the classic prediction.");
+    out.push("<b>How much to trust one round.</b> Luck alone can move one round's wait about "+LUCK+" ms up or down. Your settled score pools "+N+" rounds and is the one to trust.");
+    if(acc<80)out.push("<b>About your accuracy, "+acc+"%.</b> Trials with a wrong key, a missed answer, or the right box answered first were left out. With fewer trials, this round is less reliable.");
+    var ref=wait!=null&&wait>60?wait:250,ft=Math.round(ref/1000*88);
+    out.push("<b>Why it matters.</b> At 60 miles per hour, a car covers 88 feet every second. A "+Math.round(ref)+" ms delay before braking means about "+ft+" more feet of travel. That's why a quick decision right before a hazard matters.");
+    return out.map(function(x){return "<p>"+x+"</p>"}).join("")}
+
   function chart(by,base){
     var vals=[];by.forEach(function(b){if(b.rt2!=null)vals.push(b.rt2);if(b.rt1!=null)vals.push(b.rt1)});if(base!=null)vals.push(base);
-    var W=480,H=240,L=46,R=12,T=12,B=30;
-    var lo=Math.floor((Math.min.apply(null,vals.concat([400]))-50)/100)*100,hi=Math.ceil((Math.max.apply(null,vals.concat([700]))+50)/100)*100;
-    lo=Math.max(0,lo);
+    var W=480,H=240,L=58,R=12,T=12,B=30;
+    var lo=Math.max(0,Math.floor((Math.min.apply(null,vals.concat([400]))-50)/100)*100),hi=Math.ceil((Math.max.apply(null,vals.concat([700]))+50)/100)*100;
     function X(s){return L+s/1000*(W-L-R)}
     function Y(v){return T+(hi-v)/(hi-lo)*(H-T-B)}
     var g="",step=(hi-lo)>800?200:100;
-    for(var v=lo;v<=hi;v+=step)g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+v+'</text>';
+    for(var v=lo;v<=hi;v+=step)g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+v+' ms</text>';
     SOAS.forEach(function(s){g+='<text x="'+X(s)+'" y="'+(H-12)+'" text-anchor="middle">'+s+'</text>'});
     g+='<text x="'+((L+W-R)/2)+'" y="'+(H-1)+'" text-anchor="middle">gap between boxes (ms)</text>';
-    g+='<text x="10" y="'+(T+4)+'">ms</text>';
     if(base!=null)g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(base)+'" y2="'+Y(base)+'" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>';
     function line(key,color,w){var pts=by.filter(function(b){return b[key]!=null}).map(function(b){return [X(b.soa),Y(b[key])]});if(!pts.length)return;
       g+='<polyline points="'+pts.map(function(p){return p.join(",")}).join(" ")+'" fill="none" stroke="'+color+'" stroke-width="'+w+'" stroke-linejoin="round" stroke-linecap="round"/>';
       pts.forEach(function(p){g+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="'+color+'"/>'})}
-    line("rt1","var(--blue)",2);line("rt2","var(--wait)",2.5);
-    $("chart").innerHTML=g;
-  }
+    line("rt1","var(--blue)",2);line("rt2","var(--wait)",2.5);$("chart").innerHTML=g}
 
-  function load(){try{return JSON.parse(localStorage.getItem("onelane.runs")||"[]")}catch(e){return []}}
-  function save(r){var a=load();a.unshift(r);a=a.slice(0,20);try{localStorage.setItem("onelane.runs",JSON.stringify(a))}catch(e){}hist(a)}
+  function summaryText(st){
+    if(st.settled!=null)return "Your second decision waits about "+Math.round(st.settled)+" ms behind your first when they come close together (settled over your last "+N+" rounds).";
+    if(st.n)return "Your second decision has waited about "+Math.round(st.avg)+" ms behind your first so far. "+ML.plural(st.need,"more round")+" before this score is reliable.";
+    return "Not played yet."}
+  function normText(s){return "No published adult norm exists for this game, because the wait depends heavily on which two tasks are used. One study found 353 ms before practice with a different task pair, so it isn't a fair comparison.";}
+  function normObj(s){return {label:"No published adult norm for this game"}}
+  function status(){
+    var runs=ML.load(KEY),st=ML.settle(runs,N,val),h="";
+    if(st.settled==null){
+      h+='<h2>Still settling: '+ML.plural(st.need,"more round")+' before your score is reliable</h2>';
+      h+='<div class="ml-meter"><i style="width:'+(st.n/N*100)+'%"></i></div>';
+      h+='<p>One round can swing about '+LUCK+' ms either way from luck alone. Pooling '+N+' rounds narrows that to about ±'+MARGIN+' ms.</p>';
+      if(st.n)h+='<p><b>Average so far:</b> your second decision waited about '+Math.round(st.avg)+' ms, over '+ML.plural(st.n,"round")+'. This is an early read.</p>';
+    }else{
+      var s=Math.round(st.settled),ft=Math.round(s/1000*88),rec=runs.filter(function(r){return typeof r.w==="number"}).slice(0,N);
+      var sl=ML.mean(rec.map(function(r){return r.sl}).filter(function(x){return typeof x==="number"})),bs=ML.mean(rec.map(function(r){return r.b}).filter(function(x){return typeof x==="number"}));
+      h+='<h2>What your scores mean so far</h2><p><span class="ml-pill ok">Settled</span> <span class="ml-pill">'+ML.plural(st.n,"round")+' played</span></p>';
+      h+='<p><b>Your settled wait: '+s+' ms.</b> When a second quick decision comes right behind a first, it waits about '+s+' ms, or '+(s/1000).toFixed(2)+' seconds, for the first to finish. At 60 mph a car travels about '+ft+' feet in that time. This pools your last '+N+' rounds, so it should be within about ±'+MARGIN+' ms of your true level.</p>';
+      h+='<p><b>Compared with adults.</b> '+normText(s)+'</p>';
+      h+='<p><b>Consistency.</b> Your last '+N+' rounds varied by about ±'+ML.plural(Math.round(st.spread),"ms").replace("mss","ms")+' around your average. '+(st.spread<ROUND_SD*0.75?'That\'s steadier than luck alone usually allows.':(st.spread<=ROUND_SD*1.25?'That\'s about what luck alone produces.':'That\'s more than luck alone explains, so your speed or focus changes from round to round.'))+'</p>';
+      if(st.firstN!=null){var ch=st.latestN-st.firstN;h+='<p><b>Change over time.</b> Your first '+N+' rounds averaged '+Math.round(st.firstN)+' ms. Your latest '+N+' average '+Math.round(st.latestN)+' ms. '+(Math.abs(ch)<MARGIN?'That\'s within the margin of luck, so no clear change.':(ch<0?'Your wait has shrunk. Research finds practice can shrink this delay, though usually not to zero.':'Your wait has grown. Tiredness or distraction can do this.'))+'</p>'}
+      else h+='<p><b>Change over time.</b> After '+(2*N)+' rounds, this will compare your first '+N+' with your latest '+N+'. '+ML.plural(2*N-st.n,"more round")+' to go.</p>';
+      if(sl!=null)h+='<p><b>Single file or overlap?</b> Your average slope is about '+Math.round(sl)+' ms per 100 ms. '+(sl>=70?'That\'s close to the 100 that strict one-at-a-time processing predicts.':(sl>=30?'That\'s between strict single file (100) and full overlap (0).':'That\'s well below 100, so your decisions overlapped more than the classic model predicts.'))+(bs!=null?' Your right-box speed alone averages '+Math.round(bs)+' ms.':'')+'</p>'}
+    h+='<svg class="ml-trend" id="trend" viewBox="0 0 480 150" role="img" aria-label="Your decision wait each round"></svg><div id="resetWrap"></div>';
+    $("mlstatus").innerHTML=h;
+    ML.trend($("trend"),st.vals,N,function(v){return Math.round(v)+" ms"},"var(--wait)");
+    ML.resetLink($("resetWrap"),[KEY,SUMKEY],"Reset my scores",function(){status();hist([]);$("results").hidden=true});
+    ML.saveSummary("olb",{settled:st.settled!=null,n:st.n,need:st.need,N:N,score:st.settled!=null?st.settled:st.avg,norm:normObj(st.settled),t:summaryText(st)})}
+
   function hist(a){if(!a.length){$("histWrap").hidden=true;return}$("histWrap").hidden=false;
     $("hist").innerHTML=a.slice(0,8).map(function(r){var d=new Date(r.d);
-      return "<tr><td>"+(d.getMonth()+1)+"/"+d.getDate()+" "+d.toTimeString().slice(0,5)+"</td><td>"+(r.b==null?"--":r.b)+"</td><td>"+(r.w==null?"--":(r.w>=0?"+":"")+r.w)+"</td><td>"+r.a+"%</td></tr>"}).join("");
-    var w=a.filter(function(r){return r.w!=null}).map(function(r){return r.w}),s=0;w.forEach(function(x){s+=x});
-    $("histAvg").textContent=w.length>1?("Your average wait across "+w.length+" runs: "+Math.round(s/w.length)+" ms. Times are in milliseconds."):"Times are in milliseconds. Play a few more runs to see your average."}
+      return "<tr><td>"+(d.getMonth()+1)+"/"+d.getDate()+" "+d.toTimeString().slice(0,5)+"</td><td>"+(r.b==null?"--":r.b)+"</td><td>"+(r.w==null?"--":(r.w>=0?"+":"")+r.w)+"</td><td>"+r.a+"%</td></tr>"}).join("")}
 
   function reset(){clearTimeout(timer);cancelAnimationFrame(raf);S=fresh();fixation(true);$("fb").textContent="";$("results").hidden=true;ui()}
-  $("go").addEventListener("click",function(){if(S.running||S.part>1)return;S.running=true;$("fb").textContent="";ui();nextTrial()});
-  $("restart").addEventListener("click",reset);
+  $("go").addEventListener("click",function(){if(S.running)return;if(S.part>1){reset();return}S.running=true;S.active=true;$("fb").textContent="";ui();nextTrial()});
   $("again").addEventListener("click",function(){reset();window.scrollTo({top:0})});
   var map={k1b:[1,"blue"],k1o:[1,"orange"],k2u:[2,"up"],k2d:[2,"down"]};
   Object.keys(map).forEach(function(id){var m=map[id];
@@ -328,7 +454,8 @@ details p b,.sci b{font-weight:500}
     $(id).addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();respond(m[0],m[1])}})});
   document.addEventListener("keydown",function(e){if(e.repeat||e.metaKey||e.ctrlKey)return;var k=e.key.toLowerCase();
     var m={a:[1,"blue"],s:[1,"orange"],k:[2,"up"],l:[2,"down"]}[k];if(m){e.preventDefault();respond(m[0],m[1])}});
-  reset();hist(load());
+  ML.sources($("sources"),SOURCES);
+  reset();hist(ML.load(KEY));status();
 })();
 </script>
 
