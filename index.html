@@ -86,6 +86,10 @@ details p b,.sci b{font-weight:500}
 .sci{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:10px;font-size:15px;max-width:62ch}
 .sci span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
 .foot{font-size:12px;color:var(--muted);text-align:center}
+.plain{background:var(--bg);border-radius:12px;padding:14px 16px}
+.plain h3{font:700 17px/1.3 var(--f-display);margin:0 0 4px}
+.plain p{margin:8px 0 0;font-size:15px;max-width:62ch}
+.plain p b{font-weight:500}
 @media (prefers-reduced-motion:reduce){.key,.box{transition:none}}
 </style>
 
@@ -138,6 +142,10 @@ details p b,.sci b{font-weight:500}
       <div class="st"><small>Accuracy</small><b id="acc"></b><span>Trials with both answers right, in order</span></div>
     </div>
     <p class="note" id="slopeNote"></p>
+    <div class="plain">
+      <h3>What this means, in plain English</h3>
+      <div id="plain"></div>
+    </div>
     <div class="row"><button class="btn" id="again">Play again</button></div>
     <div id="histWrap" hidden>
       <table class="hist"><thead><tr><th>Run</th><th>Alone</th><th>Wait</th><th>Accuracy</th></tr></thead><tbody id="hist"></tbody></table>
@@ -252,11 +260,31 @@ details p b,.sci b{font-weight:500}
     $("slopeNote").textContent=slope==null?"":(slope>=70?"Your slope was about "+Math.round(slope)+" ms per 100 ms. Close to 100 means your two decisions went almost strictly one at a time.":
       (slope>=30?"Your slope was about "+Math.round(slope)+" ms per 100 ms. Partly one at a time, with some overlap or noise.":"Your slope was about "+Math.round(slope)+" ms per 100 ms. Little single-file pattern this run, which can happen with only 6 trials per gap."));
     chart(by,base);
+    $("plain").innerHTML=plain(by,base,wait,slope,acc);
     $("results").hidden=false;
     save({d:Date.now(),b:base==null?null:Math.round(base),w:wait==null?null:Math.round(wait),a:acc});
     $("results").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
   }
 
+  function sec(x){var s=x/1000;return "about "+(s<0.95?s.toFixed(2):s.toFixed(1))+" seconds"}
+  function plain(by,base,wait,slope,acc){
+    var out=[];
+    out.push("<b>First, the units.</b> Times here are in milliseconds, written ms. A millisecond is a thousandth of a second, so 250 ms is a quarter of a second.");
+    if(wait==null){out.push("<b>The short version.</b> Too few trials were answered correctly and in order to measure your wait. Play again, and always answer the left box first.");}
+    else if(wait>60)out.push("<b>The short version.</b> When the right box showed up right after the left one, you took "+Math.round(wait)+" ms longer to answer it ("+sec(wait)+") than when it came a full second later. Your eyes saw both boxes at once. But your brain made the two choices one at a time, so the second choice waited in line.");
+    else out.push("<b>The short version.</b> Your second answer barely waited this run, only "+Math.round(wait)+" ms. Most people wait much longer. A short run can be noisy, so try a few more before reading much into it.");
+    var r50=by[0].rt2,r1000=by[4].rt2,rt1s=by.map(function(b){return b.rt1}).filter(function(x){return x!=null});
+    var flat=rt1s.length>1&&(Math.max.apply(null,rt1s)-Math.min.apply(null,rt1s))<120;
+    var shape=(r50!=null&&r1000!=null&&r50-r1000>60)?"Yours does exactly that: it starts high at the shortest gap and drops toward the gray line as the gap grows.":"Yours didn't drop much this run, which is why your wait came out small.";
+    out.push("<b>Reading the chart.</b> Left to right is the gap between the two boxes, from 50 ms to a full second. The red line is how fast you answered the right box at each gap. The gray dashed line is how fast you answered it when it appeared alone. If your brain could make both choices at the same moment, the red line would sit flat on the gray line. Instead, when the gap is short, the right answer has to wait, so the red line should start high and come down. "+shape+" The blue line is the left box. "+(flat?"It stays about flat because the left box was always first in line, so it never had to wait.":"It moved around a bit this run, but the left box never has to wait, so on average it should stay flat."));
+    if(slope!=null){var sl=Math.round(slope);
+      out.push("<b>The slope, "+sl+" ms.</b> Picture a single checkout lane. If you step in line 100 ms after the person ahead, and they still need 100 ms to finish, you wait the full 100 ms. So if decisions go strictly one at a time, every 100 ms sooner the right box appears adds about 100 ms of waiting. "+(sl>=70?"Yours was "+sl+", close to that. Your two choices went almost strictly single file.":(sl>=30?"Yours was "+sl+", so mostly single file, with some overlap or noise.":"Yours was "+sl+", so little single-file pattern this run. With only 6 trials at each gap, one run can miss it.")));}
+    if(base!=null&&r50!=null)out.push("<b>Alone vs squeezed.</b> On its own, you answered the right box in "+Math.round(base)+" ms. Squeezed right behind the left box, it took "+Math.round(r50)+" ms. Same box, same choice. "+(r50>base*1.15?"The only difference was what was in line ahead of it.":"This run, being squeezed didn't slow it much."));
+    if(acc<80)out.push("<b>About your accuracy, "+acc+"%.</b> Trials with a wrong key, a missed answer, or the right box answered first were left out. With fewer trials left, your numbers are less reliable this run.");
+    if(wait!=null&&wait>60){var ft=Math.round(wait/1000*88);out.push("<b>Why it matters.</b> This is the same delay that shows up in driving. At 60 miles per hour, a car covers 88 feet every second. A "+Math.round(wait)+" ms delay before you hit the brakes means about "+ft+" more feet of travel. It's also why hands-free phones don't fix distracted driving. The problem isn't your hands. It's the single lane your decisions travel through.");}
+    else out.push("<b>Why it matters.</b> This delay shows up in driving. At 60 miles per hour, a car covers 88 feet every second, so even a quarter-second wait before braking adds about 22 feet. It's also why hands-free phones don't fix distracted driving. The problem isn't your hands. It's the single lane your decisions travel through.");
+    return out.map(function(x){return "<p>"+x+"</p>"}).join("");
+  }
   function chart(by,base){
     var vals=[];by.forEach(function(b){if(b.rt2!=null)vals.push(b.rt2);if(b.rt1!=null)vals.push(b.rt1)});if(base!=null)vals.push(base);
     var W=480,H=240,L=46,R=12,T=12,B=30;
